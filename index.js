@@ -1,7 +1,15 @@
-const { app, BrowserWindow, Menu } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
+const fs = require('fs');
+const path = require('path');
 
 let mainWindow;
 let settingsWindow;
+let outputFolderPath;
+
+function createTextFile(folderPath) {
+    const filePath = path.join(folderPath, 'test.txt');
+    fs.writeFileSync(filePath, 'potato');
+}
 
 function createMainWindow() {
       mainWindow = new BrowserWindow({
@@ -56,15 +64,21 @@ const menuTemplate = [
     },
     {
         label: 'Settings',
-        click() { 
-            if (!settingsWindow) {
-                createSettingsWindow(); // Create the settings window if it doesn't exist
-            } else {
-                settingsWindow.focus(); // Focus the settings window if it already exists
+        submenu: [
+            {
+                label: 'Set Output Folder',
+                click: async () => {
+                    const result = await dialog.showOpenDialog(mainWindow, {
+                        properties: ['openDirectory']
+                    });
+                    if (!result.canceled) {
+                        outputFolderPath = result.filePaths[0];
+                    }
+                }
             }
-        }
-    }
-    // Add more menu items as needed
+        ]
+    },
+    
 ];
 
 app.whenReady().then(() => {
@@ -82,5 +96,20 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
         createMainWindow();
+    }
+});
+
+ipcMain.on('open-output-folder-dialog', async (event) => {
+    if (!outputFolderPath) {
+        const result = await dialog.showOpenDialog(mainWindow, {
+            properties: ['openDirectory']
+        });
+        if (!result.canceled) {
+            outputFolderPath = result.filePaths[0];
+            // Continue with the file creation logic
+            createTextFile(outputFolderPath);
+        }
+    } else {
+        createTextFile(outputFolderPath);
     }
 });
