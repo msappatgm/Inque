@@ -3,7 +3,6 @@ const fs = require('fs');
 const path = require('path');
 
 let mainWindow;
-let settingsWindow;
 let outputFolderPath;
 
 function createTextFile(folderPath) {
@@ -15,7 +14,7 @@ function createMainWindow() {
       mainWindow = new BrowserWindow({
         // proper window length, doubled for debugging purposes
         //width: 400,
-        //height: 300,
+        //height: 400,
         width: 800,
         height: 600,
         resizable: false, // Prevents the window from resizing
@@ -25,26 +24,7 @@ function createMainWindow() {
         }
     });
     mainWindow.webContents.openDevTools(); // Displays Chromium Dev tools
-    mainWindow.loadFile('upload.html'); // Load the main HTML file
-}
-
-function createSettingsWindow() {
-    settingsWindow = new BrowserWindow({
-        width: 400,
-        height: 300,
-        webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false
-        },
-        parent: mainWindow, // Set the main window as the parent
-        modal: true, // Make settings window modal
-        show: false // Don't show immediately
-    });
-
-    settingsWindow.loadFile('settings.html'); // Load the settings HTML file
-    settingsWindow.once('ready-to-show', () => {
-        settingsWindow.show(); // Show when ready
-    });
+    mainWindow.loadFile('./src/html/upload.html'); // Load the main HTML file
 }
 
 const menuTemplate = [
@@ -78,7 +58,7 @@ const menuTemplate = [
             }
         ]
     },
-    
+
 ];
 
 app.whenReady().then(() => {
@@ -100,16 +80,21 @@ app.on('activate', () => {
 });
 
 ipcMain.on('open-output-folder-dialog', async (event) => {
-    if (!outputFolderPath) {
-        const result = await dialog.showOpenDialog(mainWindow, {
-            properties: ['openDirectory']
-        });
-        if (!result.canceled) {
-            outputFolderPath = result.filePaths[0];
-            // Continue with the file creation logic
-            createTextFile(outputFolderPath);
-        }
-    } else {
-        createTextFile(outputFolderPath);
+    const result = await dialog.showOpenDialog(mainWindow, {
+        properties: ['openDirectory']
+    });
+    if (!result.canceled) {
+        outputFolderPath = result.filePaths[0];
+        mainWindow.webContents.executeJavaScript(`localStorage.setItem('outputFolderPath', '${outputFolderPath.replace(/\\/g, '\\\\')}')`);
+    }
+});
+
+ipcMain.on('add-file', async (event) => {
+    const result = await dialog.showOpenDialog(mainWindow, {
+        properties: ['openFile'],
+        filters: [{ name: 'JavaScript Files', extensions: ['js', 'ts', 'tsc'] }]
+    });
+    if (!result.canceled) {
+        event.sender.send('file-added', result.filePaths[0]);
     }
 });

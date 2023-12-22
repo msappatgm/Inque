@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let fileExtension = files[0].name.split('.').pop();
             if (validExtensions.includes(`.${fileExtension}`)) {
                 // Change the window content to folder selection view
-                window.location.href = 'folder-select.html';
+                window.location.href = 'preview.html';
             } else {
                 // Display an error message if the file type is not valid
                 alert('Invalid file type! Please upload .tsc, .ts, or .js files.');

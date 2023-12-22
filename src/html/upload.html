@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inque - File Upload </title>
+    <link rel="stylesheet" type="text/css" href="../css/styles.css">
+</head>
+<body id="background">
+    <div id="drop_zone">Drop Files Here
+        <img src="../../assets/icons/upload.png" alt="+" //style="height: 100px; width: 100px;"/>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let dropZone = document.getElementById('drop_zone');
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                const files = e.dataTransfer.files;
+                console.log(files);
+                // You can now process the files
+            });
+        });
+    </script>
+    <script src="../js/render.js"></script>
+</body>
+</html>

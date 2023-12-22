@@ -1,0 +1,68 @@
+@font-face {
+    font-family: 'Athelas';
+    src: url('../../assets/fonts/Athelas-Regular.ttf') format('truetype');
+}
+
+#drop_zone {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px dashed #ccc;
+    border-radius: 20px;
+    width: 300px;
+    height: 200px;
+    padding: 10px;
+    margin: 20px auto;
+    transition: border-color 0.3s;
+    background-color: white;
+}
+
+#drop_zone:hover {
+    border-color: olive;
+    font-family: 'Athelas'
+}
+
+#outputFolder {
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+#fileList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#fileList li {
+    background-color: white;
+    border: 1px solid #ccc;
+    margin-top: 5px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+button {
+    background-color: #b7c379;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: darkolivegreen;
+}
+
+body {
+    background-color: #96b5ad;
+    font-family: 'Athelas';
+    color: #333;
+    padding: 20px;
+    text-align: center;
+}
