@@ -1,0 +1,27 @@
+{
+  "name": "inque",
+  "product-name": "Inque",
+  "version": "1.0.0",
+  "description": "a Testcafe to WDIO file conversion tool",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-packager . Inque --overwrite --platform=darwin --arch=x64 --icon=path/to/icon.icns --out=release-builds",
+    "prod": "open release-builds/Inque-darwin-x64/Inque.app"
+  },
+  "keywords": [],
+  "author": "Mark J Sapp",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0"
+  },
+  "build": {
+    "appId": "com.yourdomain.inque",
+    "mac": {
+      "category": "your.category.type",
+      "extendInfo": {
+        "CFBundleDisplayName": "Inque"
+      }
+    }
+  }
+}

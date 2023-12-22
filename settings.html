@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Settings</title>
+</head>
+<body>
+    <h1>Settings</h1>
+    <form id="settingsForm">
+        <label for="setting1">Setting 1:</label>
+        <input type="text" id="setting1" name="setting1"><br><br>
+
+        <!-- Add more settings here -->
+
+        <button type="submit">Save Settings</button>
+    </form>
+    <script>
+        document.getElementById('settingsForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Logic to save settings
+            console.log('Settings saved');
+            // Close the window or provide feedback to the user
+        });
+    </script>
+</body>
+</html>
