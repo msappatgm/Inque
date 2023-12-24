@@ -84,8 +84,19 @@ ipcMain.on('open-output-folder-dialog', async (event) => {
         properties: ['openDirectory']
     });
     if (!result.canceled) {
-        outputFolderPath = result.filePaths[0];
-        mainWindow.webContents.executeJavaScript(`localStorage.setItem('outputFolderPath', '${outputFolderPath.replace(/\\/g, '\\\\')}')`);
+        const folderPath = result.filePaths[0];
+        event.sender.send('output-folder-changed', folderPath);
+        mainWindow.webContents.executeJavaScript(`localStorage.setItem('outputFolderPath', '${folderPath.replace(/\\/g, '\\\\')}')`);
+    }
+});
+
+ipcMain.on('change-output-folder', async (event) => {
+    const result = await dialog.showOpenDialog(mainWindow, {
+        properties: ['openDirectory']
+    });
+    if (!result.canceled) {
+        const folderPath = result.filePaths[0];
+        event.sender.send('output-folder-changed', folderPath);
     }
 });
 

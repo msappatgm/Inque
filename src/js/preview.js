@@ -20,11 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // TODO: Trigger the file writing process
     });
 
-    changeFolderButton.addEventListener('click', () => {
-        // Send IPC message to change output folder
-        ipcRenderer.send('open-output-folder-dialog');
-    });
-
     function addFileToList(fileName) {
         const listItem = document.createElement('li');
         listItem.textContent = fileName;
@@ -46,4 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
     ipcRenderer.on('file-added', (event, filePath) => {
         addFileToList(filePath);
     });
+
+    ipcRenderer.on('output-folder-changed', (event, folderPath) => {
+        document.getElementById('outputFolderPath').textContent = folderPath;
+        // Update localStorage or other storage mechanism if you're using one
+        localStorage.setItem('outputFolderPath', folderPath);
+    });    
+
+    changeFolderButton.addEventListener('click', () => {
+        ipcRenderer.send('open-output-folder-dialog');
+    });      
 });
