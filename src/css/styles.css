@@ -66,3 +66,29 @@ body {
     padding: 20px;
     text-align: center;
 }
+
+#progressContainer {
+    text-align: center;
+    padding: 20px;
+}
+
+#progressBarContainer {
+    width: 80%;
+    height: 20px;
+    background-color: #ddd;
+    margin: 20px auto;
+    border-radius: 10px;
+}
+
+#progressBar {
+    height: 100%;
+    width: 0%;
+    background-color: olive;
+    border-radius: 10px;
+    transition: width 0.4s ease;
+}
+
+#convertMore {
+    margin-top: 20px;
+    /* Rest of button styling */
+}
