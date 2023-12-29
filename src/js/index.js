@@ -3,9 +3,8 @@ const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
+global.sharedData = { outputFolderPath: null };
 let mainWindow;
-// This isn't getting set outside of this file 
-let outputFolderPath;
 let draggedFilePath = null; // Variable to store the path of the dragged file
 
 function createMainWindow() {
@@ -48,7 +47,7 @@ const menuTemplate = [
                     });
                     if (!result.canceled) {
                         outputFolderPath = result.filePaths[0];
-                    }
+                        global.sharedData.outputFolderPath = outputFolderPath;                    }
                 }
             }
         ]
@@ -105,8 +104,6 @@ ipcMain.on('add-file', async (event) => {
 });
 
 ipcMain.on('start-conversion', async (event, files) => {
-    event.sender.send('some shit',outputFolderPath);
-
     if (!outputFolderPath || !fs.existsSync(outputFolderPath)) {
         console.error("Output folder path is not set or invalid.");
         event.sender.send('conversion-error', 'Invalid output folder path');

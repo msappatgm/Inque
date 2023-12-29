@@ -20,13 +20,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (validExtensions.includes(`.${fileExtension}`)) {
                 ipcRenderer.send('file-dragged', files[0].path); // Send file path to main process
                 window.location.href = 'preview.html'; // Navigate to preview.html
+                ipcRenderer.send('open-output-folder-dialog');
             } else {
                 alert('Invalid file type! Please upload .tsc, .ts, or .js files.');
             }
         }
-        ipcRenderer.send('open-output-folder-dialog');
     });
-    
 });
 
 ipcRenderer.on('selected-output-folder', (event, folderPath) => {
