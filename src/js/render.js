@@ -18,16 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (files.length > 0) {
             let fileExtension = files[0].name.split('.').pop();
             if (validExtensions.includes(`.${fileExtension}`)) {
-                // Change the window content to folder selection view
-                window.location.href = 'preview.html';
+                ipcRenderer.send('file-dragged', files[0].path); // Send file path to main process
+                window.location.href = 'preview.html'; // Navigate to preview.html
             } else {
-                // Display an error message if the file type is not valid
                 alert('Invalid file type! Please upload .tsc, .ts, or .js files.');
             }
         }
-
         ipcRenderer.send('open-output-folder-dialog');
     });
+    
 });
 
 ipcRenderer.on('selected-output-folder', (event, folderPath) => {

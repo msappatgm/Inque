@@ -1,4 +1,5 @@
 const { ipcRenderer } = require('electron');
+const path = require('path');
 
 document.addEventListener('DOMContentLoaded', () => {
     const outputFolderPath = localStorage.getItem('outputFolderPath') || 'Not Set';
@@ -10,28 +11,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const changeFolderButton = document.getElementById('changeOutputFolder');
     let files = []; // Array to store file names
 
+    ipcRenderer.send('request-dragged-file');
+
     addFileButton.addEventListener('click', () => {
         ipcRenderer.send('add-file');
     });
 
     submitButton.addEventListener('click', () => {
-        // Navigate to the loading/progress screen
+        ipcRenderer.send('start-conversion', files);
         window.location.href = '../html/progress.html';
-        // TODO: Trigger the file writing process
-    });
+    });    
 
-    function addFileToList(fileName) {
+    function addFileToList(filePath) {
+        const fileName = path.basename(filePath); // Extract the file name from the path
         const listItem = document.createElement('li');
         listItem.textContent = fileName;
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete';
         deleteButton.onclick = function() {
             listItem.remove();
-            files = files.filter(f => f !== fileName);
+            files = files.filter(f => f !== filePath); // Remove the full path
         };
         listItem.appendChild(deleteButton);
         fileList.appendChild(listItem);
-        files.push(fileName);
+        files.push(filePath); // Add the full path
     }
 
     ipcRenderer.on('selected-output-folder', (event, folderPath) => {
@@ -46,9 +49,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('outputFolderPath').textContent = folderPath;
         // Update localStorage or other storage mechanism if you're using one
         localStorage.setItem('outputFolderPath', folderPath);
-    });    
+    });
 
     changeFolderButton.addEventListener('click', () => {
         ipcRenderer.send('open-output-folder-dialog');
-    });      
+    });
+
+    ipcRenderer.on('add-file-to-preview', (event, filePath) => {
+        addFileToList(filePath);
+    });
 });

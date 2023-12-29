@@ -1,20 +1,15 @@
+const { transformContent } = require('./transformer');
 const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
 let mainWindow;
+// This isn't getting set outside of this file 
 let outputFolderPath;
-
-function createTextFile(folderPath) {
-    const filePath = path.join(folderPath, 'test.txt');
-    fs.writeFileSync(filePath, 'potato');
-}
+let draggedFilePath = null; // Variable to store the path of the dragged file
 
 function createMainWindow() {
-      mainWindow = new BrowserWindow({
-        // proper window length, doubled for debugging purposes
-        //width: 400,
-        //height: 400,
+    mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
         resizable: false, // Prevents the window from resizing
@@ -58,7 +53,6 @@ const menuTemplate = [
             }
         ]
     },
-
 ];
 
 app.whenReady().then(() => {
@@ -107,5 +101,45 @@ ipcMain.on('add-file', async (event) => {
     });
     if (!result.canceled) {
         event.sender.send('file-added', result.filePaths[0]);
+    }
+});
+
+ipcMain.on('start-conversion', async (event, files) => {
+    event.sender.send('some shit',outputFolderPath);
+
+    if (!outputFolderPath || !fs.existsSync(outputFolderPath)) {
+        console.error("Output folder path is not set or invalid.");
+        event.sender.send('conversion-error', 'Invalid output folder path');
+        return;
+    }
+    
+    console.log("Starting conversion. Output folder:", outputFolderPath);
+    for (const file of files) {
+        console.log("Converting file:", file);
+        try {
+            const content = fs.readFileSync(file, 'utf-8');
+            const transformedContent = transformContent(content); // Convert TestCafe to WDIO
+            const outputPath = path.join(outputFolderPath, path.basename(file));
+            console.log("Writing transformed content to:", outputPath);
+            fs.writeFileSync(outputPath, transformedContent); // Write the transformed content
+        } catch (error) {
+            console.error('Error processing file:', file, error);
+            event.sender.send('conversion-error', file);
+            return;
+        }
+    }
+    event.sender.send('conversion-complete');
+});
+
+// Store the path of the dragged file
+ipcMain.on('file-dragged', (event, filePath) => {
+    draggedFilePath = filePath;
+});
+
+// Send the dragged file path to the renderer when requested
+ipcMain.on('request-dragged-file', (event) => {
+    if (draggedFilePath) {
+        mainWindow.webContents.send('add-file-to-preview', draggedFilePath);
+        draggedFilePath = null; // Clear the stored path after sending
     }
 });
